@@ -1,4 +1,4 @@
-def call(def pom.artifactId, def pom.version, def pom.packaging) {
+def call(def artifactId, def version, def packaging) {
  pom = readMavenPom file: 'pom.xml'
- return "${pom.artifactId}-${pom.version}.${pom.packaging}"
+ return "${artifactId}-${version}.${packaging}"
 }
