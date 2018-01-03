@@ -3,7 +3,7 @@ properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, 
  def Reason = "Sending Success email failed"
  emailext (
  attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''
- ${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: 'yerriswamy.konanki@ggktech.com, sneha.kailasa@ggktech.com, sunil.boga@ggktech.com'
+ ${SCRIPT, template="email_mod.groovy"}''', subject: '$DEFAULT_SUBJECT', to: 'yerriswamy.konanki@ggktech.com, sneha.kailasa@ggktech.com, sunil.boga@ggktech.com'
  )
  return Reason
 }
