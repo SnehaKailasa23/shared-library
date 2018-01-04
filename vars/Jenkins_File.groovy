@@ -162,8 +162,7 @@ node {
            	properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, propertiesContent: "JobWorkSpace=${WORKSPACE}"], keepBuildVariables: true, keepJenkinsSystemVariables: true, on: true]])
 			emailext (
 				attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''
-				${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: 'yerriswamy.konanki@ggktech.com'
-			) 
+				${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${docker_properties.recipient1}, ${docker_properties.recipient2}, ${docker_properties.recipient3}") 
 		}
 	}
 	
@@ -173,8 +172,7 @@ catch(Exception e)
 		currentBuild.result = "FAILURE"
 		properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, propertiesContent: "Reason=${Reason}"], keepBuildVariables: true, keepJenkinsSystemVariables: true, on: true]])
 		emailext (
-			attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: 'yerriswamy.konanki@ggktech.com'
-		)
+			attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${docker_properties.recipient1}, ${docker_properties.recipient2}, ${docker_properties.recipient3}")
 		sh 'exit 1'
 	}
 }
