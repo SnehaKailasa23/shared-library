@@ -15,13 +15,6 @@ def getMavenBuildArtifactName() {
  return "${pom.artifactId}-${pom.version}.${pom.packaging}"
 }
  
-// Email Notifications template when Build fails //
-def notifyFailure(def Reason){
-emailext (
-	attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${docker_properties.recipient1}, ${docker_properties.recipient2}, ${docker_properties.recipient3}"
-	)
-}
-
 def call() {
 
 /****************************** Jenkinsfile execution starts here ******************************/
@@ -59,7 +52,7 @@ node {
 			} */
 		}	// Reading branch variable stage ends
 		
-		server =  Artifactory.server (docker_properties.ArtifactoryServerName)
+		server =  Artifactory.server docker_properties.ArtifactoryServerName
 		println server
 		println "server is here"
 
@@ -183,7 +176,9 @@ catch(Exception e)
 		//sh './clean_up.sh'
 		currentBuild.result = "FAILURE"
 		properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, propertiesContent: "Reason=${Reason}"], keepBuildVariables: true, keepJenkinsSystemVariables: true, on: true]])
-		notifyFailure(Reason)
+		emailext (
+			attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${docker_properties.recipient1}, ${docker_properties.recipient2}, ${docker_properties.recipient3}"
+		)
 		sh 'exit 1'
 	}
 }
