@@ -68,6 +68,8 @@ node {
 		}	// Reading branch variable stage ends
 		
 		server =  Artifactory.server docker_properties.ArtifactoryServerName
+		println server
+		println "server is here"
 
 /****************************** Building the Application and performing SonarQube analysis ******************************/	
 		stage ('Maven Build') {
