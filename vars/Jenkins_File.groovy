@@ -41,7 +41,7 @@ node {
 			checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/TestBoga']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/SnehaKailasa23/CICD.git']]]
 			//checkout scm
 			}	//Checkout SCM stage ends
-      	def content = readFile './.env'				// variable to store .env file contents
+      		def content = readFile './.env'				// variable to store .env file contents
 		docker_properties = new Properties()	// creating an object for Properties class
 		InputStream contents = new ByteArrayInputStream(content.getBytes());	// storing the contents
 		docker_properties.load(contents)	
@@ -66,8 +66,9 @@ node {
 				 Sonar_project_name = lock_resource_name
 			} */
 		}	// Reading branch variable stage ends
+		
 		server =  Artifactory.server docker_properties.ArtifactoryServerName
-	
+
 /****************************** Building the Application and performing SonarQube analysis ******************************/	
 		stage ('Maven Build') {
 			Reason = "Maven Build Failed"
