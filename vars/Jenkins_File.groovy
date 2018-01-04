@@ -7,20 +7,12 @@ def buildInfo = null 						// variable to store build info which is used by Arti
 def rtMaven = Artifactory.newMavenBuild()	// creating an Artifactory Maven Build instance
 def Reason = "JOB FAILED"					// variable to display the build failure reason
 def lock_resource_name = null 					// variable for storing lock resource name
-Properties docker_properties
+//Properties docker_properties
 
 // Reading jar file name from pom.xml //
 def getMavenBuildArtifactName() {
  pom = readMavenPom file: 'pom.xml'
  return "${pom.artifactId}-${pom.version}.${pom.packaging}"
-}
-
-// Email Notifications template when Build succeeds //
-def notifySuccessful(){
-emailext (
- attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''
- ${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${docker_properties.recipient1}, ${docker_properties.recipient2}, ${docker_properties.recipient3}"
- )
 }
  
 // Email Notifications template when Build fails //
@@ -42,7 +34,7 @@ node {
 			//checkout scm
 			}	//Checkout SCM stage ends
       		def content = readFile './.env'				// variable to store .env file contents
-		docker_properties = new Properties()	// creating an object for Properties class
+		Properties docker_properties = new Properties()	// creating an object for Properties class
 		InputStream contents = new ByteArrayInputStream(content.getBytes());	// storing the contents
 		docker_properties.load(contents)	
 		contents = null
@@ -67,7 +59,7 @@ node {
 			} */
 		}	// Reading branch variable stage ends
 		
-		server =  Artifactory.server docker_properties.ArtifactoryServerName
+		server =  Artifactory.server (docker_properties.ArtifactoryServerName)
 		println server
 		println "server is here"
 
@@ -180,7 +172,9 @@ node {
 /****************************** Stage for sending Email Notifications when Build succeeds ******************************/	
 		stage ('Email Notifications') {
            	properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, propertiesContent: "JobWorkSpace=${WORKSPACE}"], keepBuildVariables: true, keepJenkinsSystemVariables: true, on: true]])
-			notifySuccessful() 
+		emailext (
+			 attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''
+ 			${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${docker_properties.recipient1}, ${docker_properties.recipient2}, ${docker_properties.recipient3}")
 		}
 	}
 	
