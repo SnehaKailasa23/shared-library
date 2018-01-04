@@ -1,3 +1,10 @@
+// Reading jar file name from pom.xml //
+def getMavenBuildArtifactName() {
+ pom = readMavenPom file: 'pom.xml'
+ return "${pom.artifactId}-${pom.version}.${pom.packaging}"
+}
+
+def call() {
 /****************************** Environment variables ******************************/  
 def JobName	= null						// variable to get jobname  
 def Sonar_project_name = null 							// varibale passed as SonarQube parameter while building the application
@@ -7,15 +14,7 @@ def buildInfo = null 						// variable to store build info which is used by Arti
 def rtMaven = Artifactory.newMavenBuild()	// creating an Artifactory Maven Build instance
 def Reason = "JOB FAILED"					// variable to display the build failure reason
 def lock_resource_name = null 					// variable for storing lock resource name
-//Properties docker_properties
 
-// Reading jar file name from pom.xml //
-def getMavenBuildArtifactName() {
- pom = readMavenPom file: 'pom.xml'
- return "${pom.artifactId}-${pom.version}.${pom.packaging}"
-}
- 
-def call() {
 
 /****************************** Jenkinsfile execution starts here ******************************/
 node {
@@ -26,7 +25,7 @@ node {
 			checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/TestBoga']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/SnehaKailasa23/CICD.git']]]
 			//checkout scm
 			}	//Checkout SCM stage ends
-      		def content = readFile './.env'				// variable to store .env file contents
+      	def content = readFile './.env'				// variable to store .env file contents
 		Properties docker_properties = new Properties()	// creating an object for Properties class
 		InputStream contents = new ByteArrayInputStream(content.getBytes());	// storing the contents
 		docker_properties.load(contents)	
@@ -51,15 +50,11 @@ node {
 				 Sonar_project_name = lock_resource_name
 			} */
 		}	// Reading branch variable stage ends
-		
 		server =  Artifactory.server docker_properties.ArtifactoryServerName
-		println server
-		println "server is here"
-
+	
 /****************************** Building the Application and performing SonarQube analysis ******************************/	
 		stage ('Maven Build') {
 			Reason = "Maven Build Failed"
-			println "Entered here 1"
 			rtMaven.deployer server: server, snapshotRepo: docker_properties.snapshot_repo, releaseRepo: docker_properties.release_repo			//Deploying artifacts to this repo //
 			rtMaven.deployer.deployArtifacts = false		//this will not publish artifacts soon after build succeeds	//
 			rtMaven.tool = 'maven'							//Defining maven tool //
@@ -130,7 +125,7 @@ node {
 					} 
 				}     //if loop
 				}
-				//sh './clean_up.sh'	
+				sh './clean_up.sh'	
 			}   //lock			
 		}		// Docker Deployment and RFW stage ends here //
 
@@ -157,27 +152,28 @@ node {
 		} 
 		
 /****************************** Stage for creating reports for SonarQube Analysis ******************************/
-		/*stage ('Reports creation') {
+		stage ('Reports creation') {
 			Reason = "Reports creation Failed"
 			sh """ curl "http://10.240.17.12:9000/sonar/api/resources?resource=${Sonar_project_name}&metrics=bugs,vulnerabilities,code_smells,duplicated_blocks" > output.json """
-		} */
+		} 
 		
 /****************************** Stage for sending Email Notifications when Build succeeds ******************************/	
 		stage ('Email Notifications') {
            	properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, propertiesContent: "JobWorkSpace=${WORKSPACE}"], keepBuildVariables: true, keepJenkinsSystemVariables: true, on: true]])
-		emailext (
-			 attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''
- 			${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${docker_properties.recipient1}, ${docker_properties.recipient2}, ${docker_properties.recipient3}")
+			emailext (
+				attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''
+				${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: 'yerriswamy.konanki@ggktech.com'
+			) 
 		}
 	}
 	
 catch(Exception e)
 	{
-		//sh './clean_up.sh'
+		sh './clean_up.sh'
 		currentBuild.result = "FAILURE"
 		properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, propertiesContent: "Reason=${Reason}"], keepBuildVariables: true, keepJenkinsSystemVariables: true, on: true]])
 		emailext (
-			attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${docker_properties.recipient1}, ${docker_properties.recipient2}, ${docker_properties.recipient3}"
+			attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: 'yerriswamy.konanki@ggktech.com'
 		)
 		sh 'exit 1'
 	}
