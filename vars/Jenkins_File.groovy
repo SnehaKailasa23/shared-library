@@ -7,7 +7,7 @@ def buildInfo = null 						// variable to store build info which is used by Arti
 def rtMaven = Artifactory.newMavenBuild()	// creating an Artifactory Maven Build instance
 def Reason = "JOB FAILED"					// variable to display the build failure reason
 def lock_resource_name = null 					// variable for storing lock resource name
-Properties docker_properties = new Properties()
+Properties docker_properties
 
 // Reading jar file name from pom.xml //
 def getMavenBuildArtifactName() {
@@ -42,7 +42,7 @@ node {
 			//checkout scm
 			}	//Checkout SCM stage ends
       		def content = readFile './.env'				// variable to store .env file contents
-		//Properties docker_properties = new Properties()	// creating an object for Properties class
+		docker_properties = new Properties()	// creating an object for Properties class
 		InputStream contents = new ByteArrayInputStream(content.getBytes());	// storing the contents
 		docker_properties.load(contents)	
 		contents = null
