@@ -1,6 +1,5 @@
 def call(def buildInfo, def release_repo, def snapshot_repo, def server)
 {
-	def Reason = "Build Promotions Failed"
 	def promotionConfig = [
 	// Mandatory parameters
 	'buildName'          : buildInfo.name,
@@ -18,5 +17,4 @@ def call(def buildInfo, def release_repo, def snapshot_repo, def server)
 	 
 	// Interactive promotion of Builds in Artifactory server from Jenkins UI //
 	Artifactory.addInteractivePromotion server: server, promotionConfig: promotionConfig, displayName: "Promotions Time" //this need human interaction to promote
-	return Reason 
 }
