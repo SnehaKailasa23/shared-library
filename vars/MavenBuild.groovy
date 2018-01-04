@@ -1,5 +1,4 @@
 def call(def rtMaven, def server, def snapshot_repo, def release_repo, def Sonar_project_name) {
-Reason = "Maven Build Failed"
    rtMaven.deployer server: server, snapshotRepo: snapshot_repo, releaseRepo: release_repo   //Deploying artifacts to this repo //
    rtMaven.deployer.deployArtifacts = false  //this will not publish artifacts soon after build succeeds //
    rtMaven.tool = 'maven'       //Defining maven tool //
