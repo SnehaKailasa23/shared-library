@@ -1,5 +1,7 @@
+
 def call(def Sonar_project_name, def CDJob)
 {
+  prinltn "inside CDTrigger"
   def Reason = "Triggering CD job failed"
   CD_Job_name = Sonar_project_name + CDJob
   println CD_Job_name
