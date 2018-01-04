@@ -15,8 +15,6 @@ sh "jarfile_name=${jar_name} /usr/local/bin/docker-compose up -d"
                          echo "after cleanup"
        exit 1'''
       } 
-    sh "ls /home/robot/${robot_result_folder}"
-    sh "ls"
     sh "cp /home/robot/${robot_result_folder}/* ."
     // If it is a GitHub PR job, then this part doesn't execute //      
     return Reason
