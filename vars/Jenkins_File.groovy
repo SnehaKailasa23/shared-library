@@ -1,3 +1,14 @@
+/****************************** Environment variables ******************************/  
+def JobName	= null						// variable to get jobname  
+def Sonar_project_name = null 							// varibale passed as SonarQube parameter while building the application
+def robot_result_folder = null 				// variable used to store Robot Framework test results
+def server = null							// Artifactory server instance declaration. 'server1' is the Server ID given to Artifactory server in Jenkins
+def buildInfo = null 						// variable to store build info which is used by Artifactory
+def rtMaven = Artifactory.newMavenBuild()	// creating an Artifactory Maven Build instance
+def Reason = "JOB FAILED"					// variable to display the build failure reason
+def lock_resource_name = null 					// variable for storing lock resource name
+Properties docker_properties
+
 // Reading jar file name from pom.xml //
 def getMavenBuildArtifactName() {
  pom = readMavenPom file: 'pom.xml'
@@ -20,16 +31,6 @@ emailext (
 }
 
 def call() {
-/****************************** Environment variables ******************************/  
-def JobName	= null						// variable to get jobname  
-def Sonar_project_name = null 							// varibale passed as SonarQube parameter while building the application
-def robot_result_folder = null 				// variable used to store Robot Framework test results
-def server = null							// Artifactory server instance declaration. 'server1' is the Server ID given to Artifactory server in Jenkins
-def buildInfo = null 						// variable to store build info which is used by Artifactory
-def rtMaven = Artifactory.newMavenBuild()	// creating an Artifactory Maven Build instance
-def Reason = "JOB FAILED"					// variable to display the build failure reason
-def lock_resource_name = null 					// variable for storing lock resource name
-
 
 /****************************** Jenkinsfile execution starts here ******************************/
 node {
@@ -41,7 +42,7 @@ node {
 			//checkout scm
 			}	//Checkout SCM stage ends
       	def content = readFile './.env'				// variable to store .env file contents
-		Properties docker_properties = new Properties()	// creating an object for Properties class
+		docker_properties = new Properties()	// creating an object for Properties class
 		InputStream contents = new ByteArrayInputStream(content.getBytes());	// storing the contents
 		docker_properties.load(contents)	
 		contents = null
@@ -140,7 +141,7 @@ node {
 					} 
 				}     //if loop
 				}
-				sh './clean_up.sh'	
+				//sh './clean_up.sh'	
 			}   //lock			
 		}		// Docker Deployment and RFW stage ends here //
 
@@ -181,7 +182,7 @@ node {
 	
 catch(Exception e)
 	{
-		sh './clean_up.sh'
+		//sh './clean_up.sh'
 		currentBuild.result = "FAILURE"
 		properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, propertiesContent: "Reason=${Reason}"], keepBuildVariables: true, keepJenkinsSystemVariables: true, on: true]])
 		notifyFailure(Reason)
