@@ -1,6 +1,5 @@
 def call(def Docker_Reg_Name, def om_image_name, def cp_image_name, def Docker_Registry_URL, def Docker_Credentials, def image_version, def JobName) 
 {
-	Reason = "Publish Docker Images Failed"								
 	def images = []
 	images[0] = "${Docker_Reg_Name}/${om_image_name}"
 	images[1] = "${Docker_Reg_Name}/${cp_image_name}"
@@ -11,5 +10,4 @@ def call(def Docker_Reg_Name, def om_image_name, def cp_image_name, def Docker_R
         	}
 	}
 	sh """docker logout""" 
-	return Reason
 }
