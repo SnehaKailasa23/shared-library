@@ -1,3 +1,4 @@
+def call() {
 /****************************** Environment variables ******************************/  
 def JobName	= null						// variable to get jobname  
 def Sonar_project_name = null 							// varibale passed as SonarQube parameter while building the application
@@ -186,4 +187,5 @@ catch(Exception e)
 		notifyFailure(Reason)
 		sh 'exit 1'
 	}
+}
 }
