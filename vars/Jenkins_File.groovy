@@ -8,14 +8,14 @@ def getMavenBuildArtifactName() {
 def notifySuccessful(){
 emailext (
  attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''
- ${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: 'yerriswamy.konanki@ggktech.com, sunil.boga@ggktech.com, sneha.kailasa@ggktech.com'
+ ${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${docker_properties.recipient1}, ${docker_properties.recipient2}, ${docker_properties.recipient3}"
  )
 }
  
 // Email Notifications template when Build fails //
 def notifyFailure(def Reason){
 emailext (
-	attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: 'yerriswamy.konanki@ggktech.com, sunil.boga@ggktech.com, sneha.kailasa@ggktech.com'
+	attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${docker_properties.recipient1}, ${docker_properties.recipient2}, ${docker_properties.recipient3}"
 	)
 }
 
