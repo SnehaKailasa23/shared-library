@@ -114,7 +114,7 @@ def lock_resource_name = null 					// variable for storing lock resource name
 						stage ('Triggering CD Job') {
 							Reason = "Trriggering downStream Job Failed"
 							CD_Job_name = Sonar_project_name + pipelineParams.CDEnvironment
-							build job: 'Docker_Registry'//, parameters: [[$class: 'StringParameterValue', name: 'var1', value: 'var1_value']]
+							build job: 'Docker_Registry', wait: false//, parameters: [[$class: 'StringParameterValue', name: 'var1', value: 'var1_value']]
 						}
 						/****************************** Stage for artifacts promotion ******************************/
 						/*stage ('Build Promotions') {
