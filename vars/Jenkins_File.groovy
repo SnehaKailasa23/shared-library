@@ -75,7 +75,7 @@ def lock_resource_name = null 					// variable for storing lock resource name
 						sh "sudo chmod 777 wait_for_robot.sh "
 						sh './wait_for_robot.sh'
 						step([$class: 'RobotPublisher',
-							outputPath: "/home/robot/${pipelineParams.robot_result_folder}",
+							outputPath: "/home/robot/${docker_properties.robot_result_folder}",
 							passThreshold: 0,
 							unstableThreshold: 0,
 							otherFiles: ""])
@@ -86,7 +86,7 @@ def lock_resource_name = null 					// variable for storing lock resource name
 							echo "after cleanup"
 							exit 1'''
 						} 
-						sh "cp /home/robot/${pipelineParams.robot_result_folder}/* ."
+						sh "cp /home/robot/${docker_properties.robot_result_folder}/* ."
 					}			
 					// If it is a GitHub PR job, then this part doesn't execute //
 					if(!(JobName.contains('PR-'))){
