@@ -48,6 +48,7 @@ def lock_resource_name = null 					// variable for storing lock resource name
 					 Sonar_project_name = lock_resource_name
 				} */
 			}	// Reading branch variable stage ends
+			println ArtifactoryServerName
 			server =  Artifactory.server ArtifactoryServerName
 		
 	/****************************** Building the Application and performing SonarQube analysis ******************************/	
