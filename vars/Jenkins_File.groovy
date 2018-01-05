@@ -22,8 +22,8 @@ def lock_resource_name = null 					// variable for storing lock resource name
 	/****************************** Git Checkout Stage ******************************/
 			stage ('Source Code Checkout') {
 				Reason = "GIT Checkout Failed"
-				checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/TestBoga']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/SnehaKailasa23/CICD.git']]]
-				//checkout scm
+				//checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/TestBoga']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/SnehaKailasa23/CICD.git']]]
+				checkout scm
 			}	//Checkout SCM stage ends
 			def content = readFile './.env'				// variable to store .env file contents
 			Properties docker_properties = new Properties()	// creating an object for Properties class
