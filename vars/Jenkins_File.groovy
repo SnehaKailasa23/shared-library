@@ -19,10 +19,10 @@ def lock_resource_name = null 					// variable for storing lock resource name
 /****************************** Jenkinsfile execution starts here ******************************/
 node {
 	try {
+		cleanWs()
 /****************************** Git Checkout Stage ******************************/
 		stage ('Checkout') {
 			Reason = "GIT Checkout Failed"
-			cleanWs()
 			checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/TestBoga']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/SnehaKailasa23/CICD.git']]]
 			//checkout scm
 			}	//Checkout SCM stage ends
