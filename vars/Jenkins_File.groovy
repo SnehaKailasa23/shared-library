@@ -4,7 +4,7 @@ def getMavenBuildArtifactName() {
  return "${pom.artifactId}-${pom.version}.${pom.packaging}"
 }
 
-def call(def ArtifactoryServerName, def snapshotRepo, def releaseRepo, def Docker_Reg_Name,def Docker_Registry_URL, def Docker_Credentials,def CDEnvironment, def recipients) {
+def call(Map pipelineParams) {
 /****************************** Environment variables ******************************/  
 def JobName	= null						// variable to get jobname  
 def Sonar_project_name = null 							// varibale passed as SonarQube parameter while building the application
@@ -49,12 +49,12 @@ def lock_resource_name = null 					// variable for storing lock resource name
 				} */
 			}	// Reading branch variable stage ends
 			println ArtifactoryServerName
-			server =  Artifactory.server ArtifactoryServerName
+			server =  Artifactory.server pipelineParams.ArtifactoryServerName
 		
 	/****************************** Building the Application and performing SonarQube analysis ******************************/	
 			stage ('Maven Build') {
 				Reason = "Maven Build Failed"
-				rtMaven.deployer server: server, snapshotRepo: snapshot_repo, releaseRepo: release_repo			//Deploying artifacts to this repo //
+				rtMaven.deployer server: server, snapshotRepo: pipelineParams.snapshot_repo, releaseRepo: pipelineParams.release_repo			//Deploying artifacts to this repo //
 				rtMaven.deployer.deployArtifacts = false		//this will not publish artifacts soon after build succeeds	//
 				rtMaven.tool = 'maven'							//Defining maven tool //
 				// Maven build starts here //
@@ -100,9 +100,9 @@ def lock_resource_name = null 					// variable for storing lock resource name
 						stage ('Publish Docker Images'){
 							Reason = "Publish Docker Images Failed"								
 							def images = []
-							images[0] = "${Docker_Reg_Name}/${docker_properties.om_image_name}"
-							images[1] = "${Docker_Reg_Name}/${docker_properties.cp_image_name}"
-							docker.withRegistry("${Docker_Registry_URL}", "${Docker_Credentials}") {
+							images[0] = "${pipelineParams.Docker_Reg_Name}/${docker_properties.om_image_name}"
+							images[1] = "${pipelineParams.Docker_Reg_Name}/${docker_properties.cp_image_name}"
+							docker.withRegistry("${pipelineParams.Docker_Registry_URL}", "${pipelineParams.Docker_Credentials}") {
 								images.each { def image ->
 								docker.image("${image}").push("${docker_properties.image_version}")
 								docker.image("${image}").push("latest")
@@ -113,7 +113,7 @@ def lock_resource_name = null 					// variable for storing lock resource name
 						// ***** Stage for triggering CD pipeline ***** //				
 						stage ('Triggering CD Job') {
 							Reason = "Trriggering downStream Job Failed"
-							CD_Job_name = Sonar_project_name + CDEnvironment
+							CD_Job_name = Sonar_project_name + pipelineParams.CDEnvironment
 							build job: 'Docker_Registry'//, parameters: [[$class: 'StringParameterValue', name: 'var1', value: 'var1_value']]
 						}
 						/****************************** Stage for artifacts promotion ******************************/
@@ -123,11 +123,11 @@ def lock_resource_name = null 					// variable for storing lock resource name
 								// Mandatory parameters
 								'buildName'          : buildInfo.name,
 								'buildNumber'        : buildInfo.number,
-								'targetRepo'         : release_repo,
+								'targetRepo'         : pipelineParams.release_repo,
 					 
 								// Optional parameters
 								'comment'            : 'PROMOTION SUCCESSFULLY COMPLETED',
-								'sourceRepo'         : snapshot_repo,
+								'sourceRepo'         : pipelineParams.snapshot_repo,
 								'status'             : 'Released',
 								'includeDependencies': false,
 								'copy'               : false,
@@ -154,7 +154,7 @@ def lock_resource_name = null 					// variable for storing lock resource name
 				properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, propertiesContent: "JobWorkSpace=${WORKSPACE}"], keepBuildVariables: true, keepJenkinsSystemVariables: true, on: true]])
 				emailext (
 					attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''
-					${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${recipients}") 
+					${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${pipelineParams.recipients}") 
 			}
 		}
 		
@@ -163,7 +163,7 @@ def lock_resource_name = null 					// variable for storing lock resource name
 			currentBuild.result = "FAILURE"
 			properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, propertiesContent: "Reason=${Reason}"], keepBuildVariables: true, keepJenkinsSystemVariables: true, on: true]])
 			emailext (
-				attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${recipients}")
+				attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${pipelineParams.recipients}")
 			sh 'exit 1'
 		}
 	}
