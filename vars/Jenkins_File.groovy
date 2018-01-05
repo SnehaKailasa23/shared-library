@@ -4,7 +4,7 @@ def getMavenBuildArtifactName() {
  return "${pom.artifactId}-${pom.version}.${pom.packaging}"
 }
 
-def call(def ArtifactoryServerName, def snapshotRepo, def releaseRepo, def Docker_Reg_Name,def Docker_Registry_URL, def Docker_Credentials,def CDEnvironment, def recipient1, def recipient2, def recipient3) {
+def call(def ArtifactoryServerName, def snapshotRepo, def releaseRepo, def Docker_Reg_Name,def Docker_Registry_URL, def Docker_Credentials,def CDEnvironment, def recipients) {
 /****************************** Environment variables ******************************/  
 def JobName	= null						// variable to get jobname  
 def Sonar_project_name = null 							// varibale passed as SonarQube parameter while building the application
@@ -153,7 +153,7 @@ def lock_resource_name = null 					// variable for storing lock resource name
 				properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, propertiesContent: "JobWorkSpace=${WORKSPACE}"], keepBuildVariables: true, keepJenkinsSystemVariables: true, on: true]])
 				emailext (
 					attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''
-					${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${recipient1}, ${recipient2}, ${recipient3}") 
+					${SCRIPT, template="email_template_success.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${recipients}") 
 			}
 		}
 		
@@ -162,7 +162,7 @@ def lock_resource_name = null 					// variable for storing lock resource name
 			currentBuild.result = "FAILURE"
 			properties([[$class: 'EnvInjectJobProperty', info: [loadFilesFromMaster: false, propertiesContent: "Reason=${Reason}"], keepBuildVariables: true, keepJenkinsSystemVariables: true, on: true]])
 			emailext (
-				attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${recipient1}, ${recipient2}, ${recipient3}")
+				attachLog: true, attachmentsPattern: '*.html, output.xml', body: '''${SCRIPT, template="email_template_failure.groovy"}''', subject: '$DEFAULT_SUBJECT', to: "${recipients}")
 			sh 'exit 1'
 		}
 	}
