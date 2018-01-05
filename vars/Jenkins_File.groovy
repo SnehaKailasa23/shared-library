@@ -6,7 +6,7 @@ def getMavenBuildArtifactName() {
 
 def call() {
 /****************************** Environment variables ******************************/  
-def JobName	= ${JOB_NAME}				// variable to get jobname  
+def JobName = "${JOB_NAME}"				// variable to get jobname  
 def Sonar_project_name = null 							// varibale passed as SonarQube parameter while building the application
 def robot_result_folder = null 				// variable used to store Robot Framework test results
 def server = null							// Artifactory server instance declaration. 'server1' is the Server ID given to Artifactory server in Jenkins
