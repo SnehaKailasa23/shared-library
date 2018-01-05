@@ -18,7 +18,9 @@ def lock_resource_name = null 					// variable for storing lock resource name
 	/****************************** Jenkinsfile execution starts here ******************************/
 	node {
 		try {
-			cleanWs()
+			if(!(${JOB_NAME}.contains('PR-'))){
+				cleanWs()
+			}
 	/****************************** Git Checkout Stage ******************************/
 			stage ('Source Code Checkout') {
 				Reason = "GIT Checkout Failed"
