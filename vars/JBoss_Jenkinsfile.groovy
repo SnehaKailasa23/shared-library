@@ -3,9 +3,9 @@ def rtMaven = Artifactory.newMavenBuild()
 node {
 		try {
 			cleanWs()
-			stage ('Source Code Checkout') {
+		/*	stage ('Source Code Checkout') {
 				Reason = "GIT Checkout Failed"
-				checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/SnehaKailasa23/Java_sample_app.git']]]
+				checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/SnehaKailasa23/Java_sample_app.git']]]
 				//checkout scm
 			}
 			
@@ -34,7 +34,7 @@ node {
 					exit 1'''
 				}
 			}
-			
+			*/
 			stage('Deployments') {
 				sh ''' chmod 777 remote_script.sh
 				ssh -T "${pipelineParams.remote_user}"@"${pipelineParams.remote_ip}" "bash -s" < remote_script.sh '''
