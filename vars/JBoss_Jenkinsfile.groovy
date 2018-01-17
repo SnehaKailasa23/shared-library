@@ -19,7 +19,7 @@ node {
 				}
 			}
 			
-			stage('Docker') {
+			stage('Docker'){
 				sh """ sudo docker-compose up -d
 				sudo chmod 777 wait_for_robot.sh 
 				./wait_for_robot.sh """
@@ -36,7 +36,7 @@ node {
 			}
 			
 			stage('Deployments') {
-				sh '''ssh -T $pipelineParams.remote_user@$pipelineParams.remote_ip "bash -s" < $pipelineParams.deploy_script '''
+				sh '''ssh -T ${pipelineParams.remote_user}@${pipelineParams.remote_ip} "bash -s" < ${pipelineParams.deploy_script} '''
 			}
 			
 			stage('Triggering QA Job') {
