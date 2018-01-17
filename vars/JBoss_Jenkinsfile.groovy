@@ -9,7 +9,7 @@ node {
 				//checkout scm
 			}
 			
-	/*		stage('Maven Build') {
+			stage('Maven Build') {
 				Reason = "Maven Build Failed"
 				rtMaven.tool = 'maven'							//Defining maven tool //
 				// Maven build starts here //
@@ -34,7 +34,7 @@ node {
 					exit 1'''
 				}
 			}
-			*/
+			
 			stage('Deployments') {
 				sh """ chmod 777 remote_script.sh 
 				ssh -T "${pipelineParams.remote_user}"@"${pipelineParams.remote_ip}" "bash -s" < ./remote_script.sh """
