@@ -19,9 +19,24 @@ node {
 				}
 			}
 			
+			stage('Docker') {
+				sh """ sudo docker-compose up -d
+				sudo chmod 777 wait_for_robot.sh 
+				./wait_for_robot.sh """
+				step([$class: 'RobotPublisher',
+					outputPath: "/home/robot/results",
+					passThreshold: 0,
+					unstableThreshold: 0,
+					otherFiles: ""])
+				// If Robot Framework test case fails, then the build will be failed //	
+				if("${currentBuild.result}" == "FAILURE"){	
+					sh ''' ./clean_up.sh
+					exit 1'''
+				}
+			}
+			
 			stage('Deployments') {
-				sh ''' . ./Variables
-				ssh -T $pipelineParams.remote_user@$pipelineParams.remote_ip "bash -s" < $pipelineParams.deploy_script '''
+				sh '''ssh -T $pipelineParams.remote_user@$pipelineParams.remote_ip "bash -s" < $pipelineParams.deploy_script '''
 			}
 			
 			stage('Triggering QA Job') {
