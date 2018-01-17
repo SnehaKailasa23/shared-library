@@ -36,7 +36,8 @@ node {
 			}
 			
 			stage('Deployments') {
-				sh '''ssh -T ${pipelineParams.remote_user}@${pipelineParams.remote_ip} "bash -s" < ${pipelineParams.deploy_script} '''
+				sh ''' chmod 777 remote_script.sh
+				ssh -T ${pipelineParams.remote_user}@${pipelineParams.remote_ip} "bash -s" < remote_script.sh '''
 			}
 			
 			stage('Triggering QA Job') {
