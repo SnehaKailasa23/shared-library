@@ -21,6 +21,7 @@ node {
 			
 			stage('Docker-Compose'){
 				sh """ sudo docker-compose up -d
+				sudo chmod 777 clean_up.sh
 				sudo chmod 777 wait_for_robot.sh 
 				./wait_for_robot.sh """
 				step([$class: 'RobotPublisher',
