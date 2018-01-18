@@ -43,9 +43,11 @@ node {
 			stage('Triggering QA Job') {
 				build job: 'Docker_registry', wait: false
 			}
+			sh './clean_up.sh'
 		}
 		catch(Exception e)
 		{
+			sh './clean_up.sh'
 			println "In catch block"
 			sh 'exit 1'
 		}
