@@ -19,7 +19,7 @@ node {
 				}
 			}
 			
-			stage('Docker'){
+			stage('Docker-Compose'){
 				sh """ sudo docker-compose up -d
 				sudo chmod 777 wait_for_robot.sh 
 				./wait_for_robot.sh """
